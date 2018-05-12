@@ -1,5 +1,43 @@
 class PagesController < ApplicationController
-  def  index
+  before_action :set_page, except: [:index, :new, :create]
+  def index
     @pages = Page.all
-  end  
+  end
+
+  def show
+  end
+
+  def new
+    @page = Page.new
+  end
+
+  def create
+    @page = Page.new(page_params)
+    @page.slug = page_params['title']
+                  .downcase
+                  .strip
+                  .gsub(' ', '-')
+                  .gsub(/[^\w-]/, '')
+    @page.save
+    redirect_to @page
+  end
+  def edit
+  end
+  def update
+    @page.update(page_params)
+    redirect_to @page
+  end
+  def destroy
+    @page.destroy
+    redirect_to '/pages'
+  end
+  private
+
+    def page_params
+      params.require(:page).permit(:title, :body)
+    end
+
+    def set_page
+      @page = Page.find(params[:id])
+    end
 end
